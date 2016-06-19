@@ -4,6 +4,7 @@
 $(function() {
 	queue()
 		.defer(d3.csv, "grids_values_export_no0.csv")
+        .defer(d3.json,"zipcode_business.geojson")
 	//	.defer(d3.json, "grids.geojson")
     .await(dataDidLoad);
 })
@@ -42,88 +43,94 @@ var ligAveChart = dc.barChart("#light_average")
 var placesChart = dc.barChart("#places")
 
 var __map = null
-
-function dataDidLoad(error,cities) {
-  //  var map = drawBase(cities)
-    charts(cities)
- //    drawBase()
-//    drawKey()
+var colorByLight = true
+function dataDidLoad(error,grid,zipcodes) {
+    charts(grid)
 }
-//var projection = 
-//function drawBase(data){
-//    mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtaW5hdm4iLCJhIjoiSTFteE9EOCJ9.iDzgmNaITa0-q-H_jw1lJw';
-//    var map = new mapboxgl.Map({
-//        container: "map", // container id
-//        style: 'mapbox://styles/arminavn/cimgzcley000nb9nluxbgd3q5', //stylesheet location
-//        center: [-87.7,42.3], // starting position
-//        zoom: 8 // starting zoom
-//        });
-//        
-//        
-////    initCanvas(data)
-//    //    console.log(project(d))
-//     charts(data)  
-//        
-//}
-//
+
 function initCanvas(data){
-    
 
     if(__map == null){
-        
     
         mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtaW5hdm4iLCJhIjoiSTFteE9EOCJ9.iDzgmNaITa0-q-H_jw1lJw';
         __map = new mapboxgl.Map({
             container: "map", // container id
             style: 'mapbox://styles/arminavn/cimgzcley000nb9nluxbgd3q5', //stylesheet location
-            center: [-87.3,42], // starting position
-            zoom: 8, // starting zoom
-            interactive: false
+            center: [-86.4,41.6], // starting position
+            zoom: 8 // starting zoom
         });
         
     }
     var map = __map
-
+    
+    
     function project(d) {
         return map.project(getLL(d));
     }
     function getLL(d) {
           return new mapboxgl.LngLat(+d.lng, +d.lat)
     }
-            var bbox = document.body.getBoundingClientRect();
-            //var container = map.getCanvasContainer()
-            var chart = d3.select("#map").append("canvas").attr("class","datalayer").node()
-             chart.width = 1200
-             chart.height = 1200
-             // .call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoom()))
-              //.node().getContext("2d");
-      
-            var context = chart.getContext("2d");
+    var bbox = document.body.getBoundingClientRect();
+    //var container = map.getCanvasContainer()
     
+  
+    
+    var chart = d3.select("#map").append("canvas").attr("class","datalayer").node()
+     chart.width = 1800
+     chart.height = 1200
+     // .call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoom()))
+      //.node().getContext("2d");
 
-                context.clearRect(0, 0, chart.width, chart.height);
-                data.forEach(function(d, i) {
-                    var x = project(d).x
-                    var y = project(d).y
-                    //var x = (projection([d.lng,d.lat])[0])
-                    //var y = (projection([d.lng,d.lat])[1])
-                    var IC = d.inc_cat
-                    var DI = d.dev_intensity
-                    var fillColor = null
-                    var light = d.averlight
-                    var lightScale = d3.scale.linear().domain([0,200,400]).range(["#3182bd","#fee391","#fc9272"])
-                    fillColor = lightScale(light)
-                  context.beginPath();
-                  context.rect(x,y, 2, 2);
-                  context.fillStyle=fillColor;
-            //      context.fillStyle = "rgba(0,0,0,.3)"
-                  context.fill();
-                  context.closePath();
-                });
-                
- //   context.clearRect(0, 0, chart.width, chart.height);
-      
-   
+        var context = chart.getContext("2d");
+
+
+        context.clearRect(0, 0, chart.width, chart.height);
+        data.forEach(function(d, i) {
+            var x = project(d).x
+            var y = project(d).y
+            var fillColor = null
+            var colors = {
+            "1":"#fff7bc",
+            "2":"#fee391",
+            "3":"#fec44f",
+            "4":"#fee0d2",
+            "5":"#fc9272",
+            "6":"#de2d26",
+            "7":"#deebf7",
+            "8":"#9ecae1",
+            "9":"#3182bd",
+            }
+            if(colorByLight==true){
+                var light = d.averlight
+                var lightScale = d3.scale.linear().domain([0,200,400]).range(["#3182bd","#fee391","#fc9272"])
+                fillColor = lightScale(light)   
+            }else{
+                var IC = d.inc_cat
+                var DI = d.dev_intensity
+                if(IC == 1){
+                    if(DI == 1){fillColor = colors[1]}
+                    else if(DI == 2){fillColor = colors[2]}
+                    else{fillColor = colors[3]}
+                }else if (IC ==2){
+                    if(DI == 1){fillColor =  colors[4]}
+                    else if(DI == 2){fillColor =  colors[5]}
+                    else{fillColor = colors[6]}
+                }else if (IC ==3){
+                    if(DI == 1){fillColor =  colors[7]}
+                    else if(DI == 2){fillColor = colors[8]}
+                    else{fillColor = colors[9]}
+                }
+            }
+            
+            
+          context.beginPath();
+          context.rect(x,y, 1, 1);
+          context.fillStyle=fillColor;
+    //      context.fillStyle = "rgba(0,0,0,.3)"
+          context.fill();
+          context.closePath();
+        });
+ //   context.clearRect(0, 0, chart.width, chart.height);   
 }
 function charts(data){
     data.forEach(function(d){
@@ -194,52 +201,65 @@ function charts(data){
             return{count:0,x:0,y:0,label:""};
         })
         
-    busDivChart.width(chartWidth).height(100)
+        var chartHeight = 80
+    busDivChart.width(chartWidth).height(chartHeight)
         .group(busDivGroup).dimension(busDivDimension)        
         .ordinalColors(["#aaaaaa"])
+        .margins({top: 0, left: 50, right: 10, bottom: 20})
         .x(d3.scale.linear().domain([0, 3]))
     
         busDivChart.yAxis().ticks(2)
         busDivChart.xAxis().ticks(4)
     
-    placesChart.width(chartWidth).height(100)
+    placesChart.width(chartWidth).height(chartHeight)
         .group(placesGroup).dimension(placesDimension)        
         .elasticY(true)
         .ordinalColors(["#aaaaaa"])
           .gap(0)
+        .margins({top: 0, left: 50, right: 10, bottom: 20})
+        
         .x(d3.scale.linear().domain([0, 20]))
          placesChart.yAxis().ticks(2)
     
-    devIntChart.width(chartWidth).height(100)
+    devIntChart.width(chartWidth).height(chartHeight)
         .group(devIntGroup).dimension(devIntDimension)
         .ordinalColors(["#ffffff"])      
+        .margins({top: 0, left: 50, right: 10, bottom: 20})
+        
        // .x(d3.scale.linear().domain([0, 4]))
         .xAxis().ticks(4)
     
-    ligAveChart.width(chartWidth).height(100)
+    ligAveChart.width(chartWidth).height(chartHeight)
         .group(laGroup).dimension(ligAveDimension).centerBar(true)
         //.round(dc.round.floor)
         //.alwaysUseRounding(true)
         .elasticY(true)
         .ordinalColors(["#ffffff"])
+        .margins({top: 0, left: 50, right: 10, bottom: 20})
+        
         .x(d3.scale.linear().domain([0, 500]))
         .yAxis().ticks(3)
     
-    populationChart.width(chartWidth).height(100).group(pGroup).dimension(populationDimension)
+    populationChart.width(chartWidth).height(chartHeight).group(pGroup).dimension(populationDimension)
         .round(dc.round.floor)
         .alwaysUseRounding(true)
         .elasticY(true)
         .elasticX(true)
         .ordinalColors(["#ffffff"])
         .x(d3.scale.linear().domain([0, 30]))
+        .margins({top: 0, left: 50, right: 10, bottom: 20})
+        
         .yAxis().ticks(2)
+        populationChart.xAxis().ticks(4)
     
-    incomeChart.width(chartWidth).height(100).group(iGroup).dimension(incomeDimension)
+    incomeChart.width(chartWidth).height(chartHeight).group(iGroup).dimension(incomeDimension)
         .round(dc.round.floor)    
         .ordinalColors(["#ffffff"])        
         .alwaysUseRounding(true)
         .elasticY(true)
         .elasticX(true)
+        .margins({top: 0, left: 50, right: 10, bottom: 20})
+        
         .on('renderlet', function(d) {
                 var newData = incomeDimension.top(Infinity)
                 //reDrawMap(newData)
@@ -313,14 +333,17 @@ function drawMap(data){
 function drawPolygons(geoData,svg){
     var svg = d3.select("#map svg")
 	var path = d3.geo.path().projection(projection);
-svg.insert("path", ".graticule")
-      .datum(topojson.feature(geoData, geoData.objects.land))
-      .attr("class", "country")
-      .attr("d", path)
-		.style("fill","#000")
+
+    svg.selectAll("path") 
+        .data(geoData.features)
+        .enter()
+        .append("path")
+        .attr("class", "country")
+        .attr("d", path)
+        .style("fill","#000")
         .style("stroke","#ffffff")
         .style("stroke-width",1)
-	    .style("opacity",1)
+        .style("opacity",1)
 }
 //population,income,averlight,places,b_diversity,dev_intensity,id,lng,lat
 function drawKey(){

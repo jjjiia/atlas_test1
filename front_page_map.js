@@ -5,7 +5,7 @@ $(function() {
     .await(dataDidLoad);
 })
 
-var projection = d3.geo.mercator().scale(660).center([-85,45])
+var projection = d3.geo.mercator().scale(660).center([-83,39])
 var densityScale = d3.scale.linear().domain([3000,31684]).range([5,50])
 var map = true
 
@@ -18,7 +18,7 @@ function dataDidLoad(error,states,cities) {
     drawControls(formatedData)
     //drawChart(data)
     d3.select("#view-selection").on("click",function(){
-        console.log("group")
+       // console.log("group")
         var force = d3.layout.force();
         
         force.start();
@@ -78,6 +78,7 @@ function drawChart(data){
             var popChange = data[fullName[d[0]]].popChange
             return popScale(popChange)
         })
+        .attr("transform","translate(60,0)")
         //.on("mouseover",function(d){console.log(d)})
         
     svg.selectAll(".otherCities")
@@ -100,8 +101,9 @@ function drawChart(data){
         .attr("fill",function(d){
             return typeColors[typeNumberToText[d[1].type]]
         })
+        .attr("transform","translate(60,0)")
         .on("mouseover",function(d){
-            console.log(d)
+           // console.log(d)
             var tipText = tipTextFormat(d)
             tip.html(tipText)
             tip.show()
@@ -111,12 +113,12 @@ function drawChart(data){
         })
         .transition()
         .duration(1000)
-        .style("opacity",.15)
+        .style("opacity",.2)
         
-   svg.append("g").attr("class","x axis").call(xAxis).attr("transform","translate(0,480)")
-   svg.append("g").attr("class","y axis").call(yAxis).attr("transform","translate(20,0)")
-   svg.append("text").attr("class","axis").text("Population Change (2000-2014)").attr("x",0).attr("y",0).attr("transform","translate(280,500)").attr("fill","#fff")
-   svg.append("text").attr("class","axis").text("Gross Metropolitan Product(millions of dollars,2013)").attr("x",0).attr("y",0).attr("transform","translate(30,30)").attr("fill","#fff")
+   svg.append("g").attr("class","x axis").call(xAxis).attr("transform","translate(60,480)")
+   svg.append("g").attr("class","y axis").call(yAxis).attr("transform","translate(60,0)")
+   svg.append("text").attr("class","axis").text("Population Change (2000-2014)").attr("x",0).attr("y",0).attr("transform","translate(290,515)").attr("fill","#fff")
+   svg.append("text").attr("class","axis").text("Gross Metropolitan Product(millions of dollars,2013)").attr("x",0).attr("y",0).attr("transform","translate(70,30)").attr("fill","#fff")
 
 }
 function tipTextFormat(data){
@@ -154,6 +156,7 @@ function drawControls(data){
     .on("click",function(){
         d3.select(".toggle").transition().attr("cx",310)
         map = false
+        d3.selectAll(".otherCities").transition().style("opacity",.2)
         drawChart(data)
     })
 
