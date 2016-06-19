@@ -41,7 +41,7 @@ svg.append("rect").attr("x",0).attr("y",40).attr("width",width).attr("height",he
 var introText = "The Atlas of Lighting measures the value of light in cities through numeric and social interactions showing that light is an indicator of increased social and business activity in cities."
 
 var textDiv = d3.select("body").append("div").attr("class","loader-text")
-textDiv.html(introText).style("opacity",0).transition().delay(100).duration(5000).style("opacity",.6)
+textDiv.html(introText).style("opacity",0).transition().duration(2000).style("opacity",.6)
 //var textDiv = svg.append("text").text(introText).attr("x",100).attr("y",600).attr("font-size","13px").attr("fill","#fff")
 //  .attr("class","loader-text")
 //  .attr("opacity",0).transition().duration(3000).attr("opacity",.7)
