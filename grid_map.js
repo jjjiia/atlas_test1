@@ -33,7 +33,7 @@ var colors = {
 var center = cityCentroids["Chicago"]
 var projection = d3.geo.mercator().scale(20000).center([center.lng,center.lat])
 var densityScale = d3.scale.linear().domain([3000,31684]).range([5,50])
-var projection = d3.geo.mercator().scale(60000).center([-87.7,42.3])
+var projection = d3.geo.mercator().scale(30000).center([-87.7,42.3])
     var populationChart = dc.barChart("#population")
     var incomeChart = dc.barChart("#income")
     var busDivChart = dc.barChart("#business_diversity")
@@ -308,7 +308,6 @@ function initCanvas(data){
         var DI = d.dev_intensity
         var fillColor = null
         var light = d.averlight
-        console.log(light)
         var lightScale = d3.scale.linear().domain([0,400]).range(["#3182bd","#deebf7"])
         fillColor = lightScale(light)
        // if(IC == 1){
