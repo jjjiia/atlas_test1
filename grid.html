@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="UTF-8">
+	<title>NAME</title>
+	<script src="js/jquery.min.js"></script>  
+	<script src="js/queue.v1.min.js"></script>  
+	<script src="js/d3.v3.min.js"></script>  
+	<script src="js/d3.tip.v0.6.3.js"></script> 
+	<script src="bootstrap/js/bootstrap.js"></script>  
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.0/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.0/mapbox-gl.js'></script>
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="//d3js.org/topojson.v1.min.js"></script>
+  <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+  <script src="js/crossfilter.v1.min.js"></script>
+  <script src="js/dc.js"></script>
+  
+  <script src='//api.tiles.mapbox.com/mapbox.js/v1.2.0/mapbox.js'></script>
+  <link href='//api.tiles.mapbox.com/mapbox.js/v1.2.0/mapbox.css' rel='stylesheet' />
+<link href='https://fonts.googleapis.com/css?family=Dosis:500,300|Ropa+Sans' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">  
+	<link rel="stylesheet" type="text/css" href="stylesheets/atlas.css"> </style>     
+</head>
+
+<body>
+<div class = "container-fluid">
+  <div id = "header" class="row">
+    <div id = "moreinfo" class="col-md-1">
+    <img src="icons/questionMark.png" style="width:25px ">
+    </div>
+    <div id = "title" class="col-md-9">ATLAS of LIGHTING</div>
+    <div id = "philips" class="col-md-1"><img src="logos/philips_white.png" style="width:80px "></div>
+    <div id = "civic" class="col-md-1"><img src="logos/cddl_white.png" style="width:80px "></div>
+  </div>
+  
+    <div id = "map" class="col-md-8"></div>
+    <div id = "info" class="col-md-4">
+      <div id = "city-title" class="title2">
+        <div class="dropdown">
+            <button onclick="myFunction()" class="dropbtn">USA-MSA SELECTION</button>
+            <div id="myDropdown" class="dropdown-content">
+              <a href="#">Chicago</a>
+              <a href="#">City 2</a>
+              <a href="#">City 3</a>
+              <a href="#">City 4</a>
+              <a href="#">City 5</a>
+              <a href="#">City 6</a>
+              <a href="#">City 7</a>
+              <a href="#">City 8</a>
+            </div>
+          </div>
+      </div>
+      <div id = "view-selection" class="icons">        
+        light | places | instagram
+      </div>
+      <div id = "text" class="content">
+        <div class="dc-data-count">
+            <span class="filter-count"></span> selected out of <span class="total-count">
+            </span> records | <a href="javascript:dc.filterAll(); dc.redrawAll();;">Reset All</a>
+        </div>
+        <div id ="population">Population
+          <a class="reset" href="javascript:dc.filterAll();dc.redrawAll();" 			style="display: none;">reset</a></br>
+        </div>
+        <div id ="income">Median Household Income
+        <a class="reset" href="javascript:dc.filterAll();dc.redrawAll();" 			style="display: none;">reset</a></br>
+        </div>
+        <div id ="business_diversity">Business Diversity
+        <a class="reset" href="javascript:dc.filterAll();dc.redrawAll();" 			style="display: none;">reset</a></br>
+        </div>
+        <div id ="development_intensity">Development Intensity
+        <a class="reset" href="javascript:dc.filterAll();dc.redrawAll();" 			style="display: none;">reset</a></br>
+        </div>
+        <div id ="light_average">Light Average</br>
+        <a class="reset" href="javascript:dc.filterAll();dc.redrawAll();" 			style="display: none;">reset</a></br>
+        </div>
+        <div id ="places">Number of Places
+        <a class="reset" href="javascript:dc.filterAll();dc.redrawAll();" 			style="display: none;">reset</a></br>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script src="city_comparisons_data.js"></script>
+<script src="city_dropdown.js"></script>
+
+<script src="grid_map.js"></script>
+
+
+<script type="text/javascript" charset="utf-8">
+
+
+</script>
+	
+</body>
+</html>
