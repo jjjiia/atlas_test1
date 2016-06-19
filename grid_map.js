@@ -43,7 +43,7 @@ var projection = d3.geo.mercator().scale(60000).center([-87.7,42.3])
 function dataDidLoad(error,cities) {
  
     charts(cities)
-    drawKey()
+  //  drawKey()
 }
 //population,income,averlight,places,b_diversity,dev_intensity,id,lng,lat
 function drawKey(){
@@ -307,20 +307,23 @@ function initCanvas(data){
         var IC = d.inc_cat
         var DI = d.dev_intensity
         var fillColor = null
-        
-        if(IC == 1){
-            if(DI == 1){fillColor = colors[1]}
-            else if(DI == 2){fillColor = colors[2]}
-            else{fillColor = colors[3]}
-        }else if (IC ==2){
-            if(DI == 1){fillColor = colors[4]}
-            else if(DI == 2){fillColor = colors[5]}
-            else{fillColor = colors[6]}
-        }else if (IC ==3){
-            if(DI == 1){fillColor = colors[7]}
-            else if(DI == 2){fillColor = colors[8]}
-            else{fillColor = colors[9]}
-        }
+        var light = d.averlight
+        console.log(light)
+        var lightScale = d3.scale.linear().domain([0,400]).range(["#3182bd","#deebf7"])
+        fillColor = lightScale(light)
+       // if(IC == 1){
+       //     if(DI == 1){fillColor = colors[1]}
+       //     else if(DI == 2){fillColor = colors[2]}
+       //     else{fillColor = colors[3]}
+       // }else if (IC ==2){
+       //     if(DI == 1){fillColor = colors[4]}
+       //     else if(DI == 2){fillColor = colors[5]}
+       //     else{fillColor = colors[6]}
+       // }else if (IC ==3){
+       //     if(DI == 1){fillColor = colors[7]}
+       //     else if(DI == 2){fillColor = colors[8]}
+       //     else{fillColor = colors[9]}
+       // }
         
       context.beginPath();
       context.rect(x,y, 2, 2);
@@ -347,6 +350,7 @@ function drawMap(data){
         .attr("fill",function(d){
             var IC = d.inc_cat
             var DI = d.dev_intensity
+            
             if(IC == 1){
                 if(DI == 1){return colors[1]}
                 else if(DI == 2){return colors[2]}
