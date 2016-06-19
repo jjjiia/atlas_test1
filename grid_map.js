@@ -11,7 +11,12 @@ var center = cityCentroids["Chicago"]
 var projection = d3.geo.mercator().scale(20000).center([center.lng,center.lat])
 var densityScale = d3.scale.linear().domain([3000,31684]).range([5,50])
 var projection = d3.geo.mercator().scale(60000).center([-87.7,42.3])
-
+    var populationChart = dc.barChart("#population")
+    var incomeChart = dc.barChart("#income")
+    var busDivChart = dc.barChart("#business_diversity")
+    var devIntChart = dc.rowChart("#development_intensity")
+    var ligAveChart = dc.barChart("#light_average")
+    var placesChart = dc.barChart("#places")
 function dataDidLoad(error,cities) {
   //  var mapSvg = d3.select("#map").append("svg").attr("width",1200).attr("height",1800)
    // filter(cities)
@@ -20,12 +25,7 @@ function dataDidLoad(error,cities) {
 }
 //population,income,averlight,places,b_diversity,dev_intensity,id,lng,lat
 function charts(data){
-    var populationChart = dc.barChart("#population")
-    var incomeChart = dc.barChart("#income")
-    var busDivChart = dc.barChart("#business_diversity")
-    var devIntChart = dc.rowChart("#development_intensity")
-    var ligAveChart = dc.barChart("#light_average")
-    var placesChart = dc.barChart("#places")
+
     
 //    var heatmapChart = dc.heatMap("#map")
     
