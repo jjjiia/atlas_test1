@@ -34,12 +34,14 @@ var center = cityCentroids["Chicago"]
 var projection = d3.geo.mercator().scale(20000).center([center.lng,center.lat])
 var densityScale = d3.scale.linear().domain([3000,31684]).range([5,50])
 var projection = d3.geo.mercator().scale(30000).center([-87.7,42.3])
-    var populationChart = dc.barChart("#population")
-    var incomeChart = dc.barChart("#income")
-    var busDivChart = dc.barChart("#business_diversity")
-    var devIntChart = dc.rowChart("#development_intensity")
-    var ligAveChart = dc.barChart("#light_average")
-    var placesChart = dc.barChart("#places")
+var populationChart = dc.barChart("#population")
+var incomeChart = dc.barChart("#income")
+var busDivChart = dc.barChart("#business_diversity")
+var devIntChart = dc.rowChart("#development_intensity")
+var ligAveChart = dc.barChart("#light_average")
+var placesChart = dc.barChart("#places")
+
+var __map = null
 
 function dataDidLoad(error,cities) {
   //  var map = drawBase(cities)
@@ -48,39 +50,45 @@ function dataDidLoad(error,cities) {
 //    drawKey()
 }
 //var projection = 
-function drawBase(data){
-    mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtaW5hdm4iLCJhIjoiSTFteE9EOCJ9.iDzgmNaITa0-q-H_jw1lJw';
-    var map = new mapboxgl.Map({
-        container: "map", // container id
-        style: 'mapbox://styles/arminavn/cimgzcley000nb9nluxbgd3q5', //stylesheet location
-        center: [-87.7,42.3], // starting position
-        zoom: 8 // starting zoom
-        });
-        
-        
-//    initCanvas(data)
-    //    console.log(project(d))
-     charts(data)  
-        
-}
-
+//function drawBase(data){
+//    mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtaW5hdm4iLCJhIjoiSTFteE9EOCJ9.iDzgmNaITa0-q-H_jw1lJw';
+//    var map = new mapboxgl.Map({
+//        container: "map", // container id
+//        style: 'mapbox://styles/arminavn/cimgzcley000nb9nluxbgd3q5', //stylesheet location
+//        center: [-87.7,42.3], // starting position
+//        zoom: 8 // starting zoom
+//        });
+//        
+//        
+////    initCanvas(data)
+//    //    console.log(project(d))
+//     charts(data)  
+//        
+//}
+//
 function initCanvas(data){
     
 
+    if(__map == null){
+        
+    
         mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtaW5hdm4iLCJhIjoiSTFteE9EOCJ9.iDzgmNaITa0-q-H_jw1lJw';
-        var map = new mapboxgl.Map({
+        __map = new mapboxgl.Map({
             container: "map", // container id
             style: 'mapbox://styles/arminavn/cimgzcley000nb9nluxbgd3q5', //stylesheet location
             center: [-87.3,42], // starting position
-            zoom: 8 // starting zoom
-            });
+            zoom: 8, // starting zoom
+            interactive: false
+        });
+    }
+    var map = __map
 
-            function project(d) {
-              return map.project(getLL(d));
-            }
-            function getLL(d) {
-              return new mapboxgl.LngLat(+d.lng, +d.lat)
-            }
+    function project(d) {
+        return map.project(getLL(d));
+    }
+    function getLL(d) {
+          return new mapboxgl.LngLat(+d.lng, +d.lat)
+    }
             var bbox = document.body.getBoundingClientRect();
             //var container = map.getCanvasContainer()
             var chart = d3.select("#map").append("canvas").node()
