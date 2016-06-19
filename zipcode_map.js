@@ -45,10 +45,72 @@ var placesChart = dc.barChart("#places")
 var __map = null
 var colorByLight = true
 function dataDidLoad(error,grid,zipcodes) {
-    charts(grid)
+   // charts(grid)
+    baseMap(zipcodes)
    // drawPolygons(zipcodes)
 }
-
+function baseMap(zipcodes){
+    
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtaW5hdm4iLCJhIjoiSTFteE9EOCJ9.iDzgmNaITa0-q-H_jw1lJw';
+    var map = new mapboxgl.Map({
+        container: "map", // container id
+        style: 'mapbox://styles/arminavn/cimgzcley000nb9nluxbgd3q5', //stylesheet location
+        center: [-86.4,41.6], // starting position
+        zoom: 8 ,// starting zoom
+        interactive:false
+    });
+    function project(d) {
+        return map.project(getLL(d));
+    }
+    function getLL(d) {
+          return new mapboxgl.LngLat(+d.lng, +d.lat)
+    }
+    var transform = d3.geo.transform({point: projectPoint});
+	var path = d3.geo.path().projection(transform);
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-5, 0])
+    
+    var container = map.getCanvasContainer()
+    var svg = d3.select(container).append("svg")
+    svg.call(tip)
+    svg.selectAll("path") 
+        .data(zipcodes.features)
+        .enter()
+        .append("path")
+        .attr("class", "country")
+        .attr("d", path)
+        .style("fill","#3182bd")
+        .style("fill-opacity",0.1)
+        .style("stroke","#3182bd")
+        .style("stroke-width",1)
+        .style("opacity",.4)
+    .attr("cursor","pointer")
+    d3.selectAll("path")
+        .on("mouseover",function(d){
+            console.log(d)
+            d3.select("#zipcode_C").html(d.properties.name)
+            
+            d3.select("#income_C").html("**$"+parseInt(Math.random()*50000))
+            d3.select("#business_C").html("**"+parseInt(Math.random()*5000))
+            d3.select("#businessD_C").html("**"+parseInt(Math.random()*8))
+            d3.select("#population_C").html("**"+parseInt(Math.random()*5000))
+            d3.select("#light_C").html("**"+Math.random()*3)
+            tip.html("zipcode: "+d.properties.name)
+            tip.show()
+            d3.select(this).style("fill-opacity",1)
+        })
+        .on("mouseout",function(d){
+            tip.hide()
+            d3.select(this).style("fill-opacity",.1)
+            
+        })
+    
+    function projectPoint(lon, lat) {
+            var point = map.project(new mapboxgl.LngLat(lon, lat));
+    		this.stream.point(point.x, point.y);
+    	}
+}
 function initCanvas(data){
 
     if(__map == null){
@@ -333,8 +395,8 @@ function drawMap(data){
 }
 function drawPolygons(geoData){
     
-    var container = __map.getCanvasContainer()
-    var svg = d3.select(container).append("svg")
+  //  var container = __map.getCanvasContainer()
+    var svg = d3.select("#map").append("svg").attr("id","zipcode").attr("width",1200).attr("height",2000)
    // var svg = d3.select("#map svg")
 	var path = d3.geo.path().projection(projection);
 
@@ -342,13 +404,15 @@ function drawPolygons(geoData){
         .data(geoData.features)
         .enter()
         .append("path")
-        .attr("class", "country")
+        .attr("class", "zipcodes")
         .attr("d", path)
-        .style("fill","#000")
+        .style("fill","none")
         .style("stroke","#ffffff")
         .style("stroke-width",1)
         .style("opacity",1)
-}
+        .attr("cursor","pointer")
+    d3.selectAll("path").on("mouseover",function(){d3.select(this).style("fill","red")}
+)}
 //population,income,averlight,places,b_diversity,dev_intensity,id,lng,lat
 function drawKey(){
     var keyArray = []

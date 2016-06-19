@@ -6,8 +6,11 @@ body{
     fill:rgba(255,255,255,.3);
 }
 
-div{
-    
+.largeContent{
+    font-size:40px;
+}
+#zipcode{
+    z-index:99999;
 }
 #map{
     position:absolute; 
@@ -15,6 +18,11 @@ div{
     height: 1200px;
     overflow:hidden;
     left:-30px;
+}
+svg{
+    position:absolute; 
+    width: 1800px;
+    height: 1200px;
 }
 #info{
     position:relative;
