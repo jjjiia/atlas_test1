@@ -40,47 +40,82 @@ var projection = d3.geo.mercator().scale(30000).center([-87.7,42.3])
     var devIntChart = dc.rowChart("#development_intensity")
     var ligAveChart = dc.barChart("#light_average")
     var placesChart = dc.barChart("#places")
+
 function dataDidLoad(error,cities) {
- 
+  //  var map = drawBase(cities)
     charts(cities)
-  //  drawKey()
+ //    drawBase()
+//    drawKey()
 }
-//population,income,averlight,places,b_diversity,dev_intensity,id,lng,lat
-function drawKey(){
-    var keyArray = []
-    for(var i =1; i<=9; i++){
-        var color = colors[i]
-        var group = groupToWords[i]
-        keyArray.push([color,group])
-    }
-    
-    var keySvg = d3.select("#key").append("svg").attr("width",180).attr("height",180)
-    keySvg.selectAll(".key")
-    .data(keyArray)
-    .enter()
-    .append("rect")
-    .attr("x",0)
-    .attr("y",function(d,i){return i*14+10})
-    .attr("width",10)
-    .attr("height",10)
-    .attr("fill",function(d){return d[0]})
-    
-    keySvg.selectAll(".keyText")
-    .data(keyArray)
-    .enter()
-    .append("text")
-    .attr("x",15)
-    .attr("y",function(d,i){return i*14+20})
-    .attr("width",10)
-    .attr("height",10)
-    .text(function(d){return d[1]})
-    .style("fill","#fff").attr("font-size","11px")
-    
-     keySvg.append("text").text("Grid Size is 250m x 250m").attr("x",0).attr("y",160)    
-    .style("fill","#fff").attr("font-size","11px")
-
+//var projection = 
+function drawBase(data){
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtaW5hdm4iLCJhIjoiSTFteE9EOCJ9.iDzgmNaITa0-q-H_jw1lJw';
+    var map = new mapboxgl.Map({
+        container: "map", // container id
+        style: 'mapbox://styles/arminavn/cimgzcley000nb9nluxbgd3q5', //stylesheet location
+        center: [-87.7,42.3], // starting position
+        zoom: 8 // starting zoom
+        });
+        
+        
+//    initCanvas(data)
+    //    console.log(project(d))
+     charts(data)  
+        
 }
 
+function initCanvas(data){
+    
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtaW5hdm4iLCJhIjoiSTFteE9EOCJ9.iDzgmNaITa0-q-H_jw1lJw';
+        var map = new mapboxgl.Map({
+            container: "map", // container id
+            style: 'mapbox://styles/arminavn/cimgzcley000nb9nluxbgd3q5', //stylesheet location
+            center: [-87.3,42], // starting position
+            zoom: 8 // starting zoom
+            });
+
+            function project(d) {
+              return map.project(getLL(d));
+            }
+            function getLL(d) {
+              return new mapboxgl.LngLat(+d.lng, +d.lat)
+            }
+            var bbox = document.body.getBoundingClientRect();
+            //var container = map.getCanvasContainer()
+            var chart = d3.select("#map").append("canvas").node()
+             chart.width = 1200
+             chart.height = 1200
+             // .call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoom()))
+              //.node().getContext("2d");
+      
+            var context = chart.getContext("2d");
+    
+
+                context.clearRect(0, 0, chart.width, chart.height);
+                data.forEach(function(d, i) {
+                    var x = project(d).x
+                    var y = project(d).y
+                    //var x = (projection([d.lng,d.lat])[0])
+                    //var y = (projection([d.lng,d.lat])[1])
+                    var IC = d.inc_cat
+                    var DI = d.dev_intensity
+                    var fillColor = null
+                    var light = d.averlight
+                    var lightScale = d3.scale.linear().domain([0,200,400]).range(["#3182bd","#fee391","#fc9272"])
+                    fillColor = lightScale(light)
+                  context.beginPath();
+                  context.rect(x,y, 2, 2);
+                  context.fillStyle=fillColor;
+            //      context.fillStyle = "rgba(0,0,0,.3)"
+                  context.fill();
+                  context.closePath();
+                });
+                
+ //   context.clearRect(0, 0, chart.width, chart.height);
+      
+   
+}
 function charts(data){
     data.forEach(function(d){
         d.lng = +d.lng
@@ -130,16 +165,7 @@ function charts(data){
         
         return [projectedLat,projectedLng,d.dev_intensity]
     })
-  //  var lngDimension = ndx.dimension(function(d){
-  //      var projectedLng = projection([d.lng,d.lat])[0]
-  //      return projectedLng
-  //  })
-  //
-  //    
-  //  var lngDimension = ndx.dimension(function(d){return [d.lng,d.lat,d.dev_intensity]})
-  //  var latDimension = ndx.dimension(function(d){return d.lat})
-  //  
- //   var latGroup = latDimension.group()
+
       var colors = ["red","blue","orange","red"]
     var lngGroup = lngDimension.group().reduce(
         function(p,v){
@@ -159,45 +185,6 @@ function charts(data){
             return{count:0,x:0,y:0,label:""};
         })
         
-        
-//    var idDimension = ndx.dimension(function(d){return d.id})
-//    var idGroup = idDimension.group()
-        
-//        console.log(grid)
-//    var map = dc.geoChoroplethChart("#map")
-//        .projection(projection)
-//        .width(1000)
-//        .height(1000)
-//        .dimension(
-//            function(d){
-//                console.log(d)
-//             return idDimension   
-//            })
-//        .group(idGroup)
-//        .overlayGeoJson(grid.features,"id",function(d){
-//            if(d.properties.id != undefined){
-//                return d.properties.id
-//            }
-//        })
-//    
-//    d3.select("#map").append("svg").attr("width",800).attr("height",800)
-//var mapdata = []
-//    dc.bubbleChart("#map")
-//        .width(800)
-//        .height(800)
-//        .dimension(lngDimension)
-//        .group(lngGroup)
-//        .keyAccessor(function(p){return p.value.lat})
-//        .valueAccessor(function(p){return p.value.lng})
-//        .radiusValueAccessor(function (d) {
-//            return 3
-//           return d.key[2]
-//       })
-//       .colors(["red","green","blue","orange"])
-//        .x(d3.scale.linear().domain([-250, 250]))
-//        .y(d3.scale.linear().domain([-100, 100]))
-//        .r(d3.scale.linear().domain([0, 40]))
-
     busDivChart.width(chartWidth).height(100)
         .group(busDivGroup).dimension(busDivDimension)        
         .ordinalColors(["#aaaaaa"])
@@ -247,7 +234,7 @@ function charts(data){
         .on('renderlet', function(d) {
                 var newData = incomeDimension.top(Infinity)
                 //reDrawMap(newData)
-            d3.select("#map canvas").remove()
+           // d3.select("#map canvas").remove()
             initCanvas(newData)
         })
         .x(d3.scale.linear().domain([1,250000]))
@@ -268,7 +255,6 @@ function charts(data){
             all:"Total %total-count areas."
         })
         initCanvas(data)
-       // drawMap(incomeDimension.top(Infinity))
         dc.renderAll();
 }
 function reDrawMap(data){
@@ -276,60 +262,6 @@ function reDrawMap(data){
     d3.selectAll("#map circle").transition().duration(1000).attr("opacity",0)
     d3.selectAll("#map circle").data(data).transition().duration(1000).attr("opacity",1)
 
-}
-
-function initCanvas(data){
-    var base = d3.select("#map");
-    var chart = base.append("canvas")
-      .attr("width", 1000)
-      .attr("height", 1000)
-     // .call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoom()))
-      //.node().getContext("2d");
-      
-    var context = chart.node().getContext("2d");
-    context.clearRect(0, 0, chart.width, chart.height);
-    var colors = {
-    "1":"#fff7bc",
-    "2":"#fee391",
-    "3":"#fec44f",
-    "4":"#fee0d2",
-    "5":"#fc9272",
-    "6":"#de2d26",
-    "7":"#deebf7",
-    "8":"#9ecae1",
-    "9":"#3182bd",
-    }
-      
-    data.forEach(function(d, i) {
-        
-        var x = (projection([d.lng,d.lat])[0])
-        var y = (projection([d.lng,d.lat])[1])
-        var IC = d.inc_cat
-        var DI = d.dev_intensity
-        var fillColor = null
-        var light = d.averlight
-        var lightScale = d3.scale.linear().domain([0,400]).range(["#3182bd","#deebf7"])
-        fillColor = lightScale(light)
-       // if(IC == 1){
-       //     if(DI == 1){fillColor = colors[1]}
-       //     else if(DI == 2){fillColor = colors[2]}
-       //     else{fillColor = colors[3]}
-       // }else if (IC ==2){
-       //     if(DI == 1){fillColor = colors[4]}
-       //     else if(DI == 2){fillColor = colors[5]}
-       //     else{fillColor = colors[6]}
-       // }else if (IC ==3){
-       //     if(DI == 1){fillColor = colors[7]}
-       //     else if(DI == 2){fillColor = colors[8]}
-       //     else{fillColor = colors[9]}
-       // }
-        
-      context.beginPath();
-      context.rect(x,y, 2, 2);
-      context.fillStyle=fillColor;
-      context.fill();
-      context.closePath();
-    });
 }
 function drawMap(data){
    
@@ -379,4 +311,39 @@ svg.insert("path", ".graticule")
         .style("stroke","#ffffff")
         .style("stroke-width",1)
 	    .style("opacity",1)
+}
+//population,income,averlight,places,b_diversity,dev_intensity,id,lng,lat
+function drawKey(){
+    var keyArray = []
+    for(var i =1; i<=9; i++){
+        var color = colors[i]
+        var group = groupToWords[i]
+        keyArray.push([color,group])
+    }
+    
+    var keySvg = d3.select("#key").append("svg").attr("width",180).attr("height",180)
+    keySvg.selectAll(".key")
+    .data(keyArray)
+    .enter()
+    .append("rect")
+    .attr("x",0)
+    .attr("y",function(d,i){return i*14+10})
+    .attr("width",10)
+    .attr("height",10)
+    .attr("fill",function(d){return d[0]})
+    
+    keySvg.selectAll(".keyText")
+    .data(keyArray)
+    .enter()
+    .append("text")
+    .attr("x",15)
+    .attr("y",function(d,i){return i*14+20})
+    .attr("width",10)
+    .attr("height",10)
+    .text(function(d){return d[1]})
+    .style("fill","#fff").attr("font-size","11px")
+    
+     keySvg.append("text").text("Grid Size is 250m x 250m").attr("x",0).attr("y",160)    
+    .style("fill","#fff").attr("font-size","11px")
+
 }

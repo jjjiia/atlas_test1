@@ -9,6 +9,21 @@ body{
 div{
     
 }
+#map{
+    position:absolute; 
+    width: 1200px;
+    height: 1200px;
+    overflow:hidden;
+}
+#info{
+    position:relative;
+    float:right;
+}
+canvas {
+     position: absolute;
+     width: 1200px;
+     height:1200px;
+   }
 #key{
     border:1px solid #fff;
     width:200px;
