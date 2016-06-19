@@ -80,6 +80,7 @@ function initCanvas(data){
             zoom: 8, // starting zoom
             interactive: false
         });
+        
     }
     var map = __map
 
@@ -91,7 +92,7 @@ function initCanvas(data){
     }
             var bbox = document.body.getBoundingClientRect();
             //var container = map.getCanvasContainer()
-            var chart = d3.select("#map").append("canvas").node()
+            var chart = d3.select("#map").append("canvas").attr("class","datalayer").node()
              chart.width = 1200
              chart.height = 1200
              // .call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoom()))
@@ -242,7 +243,8 @@ function charts(data){
         .on('renderlet', function(d) {
                 var newData = incomeDimension.top(Infinity)
                 //reDrawMap(newData)
-           // d3.select("#map canvas").remove()
+            d3.select("#map .datalayer").remove()
+            
             initCanvas(newData)
         })
         .x(d3.scale.linear().domain([1,250000]))
