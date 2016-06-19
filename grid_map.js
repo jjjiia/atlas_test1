@@ -7,6 +7,29 @@ $(function() {
 	//	.defer(d3.json, "grids.geojson")
     .await(dataDidLoad);
 })
+var groupToWords = {
+"1":"Low Income, Low Intensity",
+"2":"Low Income, Medium Intensity",
+"3":"Low Income, High Intensity",
+"4":"Medium Income, Low Intensity",
+"5":"Medium Income, Medium Intensity",
+"6":"Medium Income, High Intensity",
+"7":"High Income, Low Intensity",
+"8":"High Income, Medium Intensity",
+"9":"High Income, High Intensity"
+}
+var colors = {
+"1":"#fff7bc",
+"2":"#fee391",
+"3":"#fec44f",
+"4":"#fee0d2",
+"5":"#fc9272",
+"6":"#de2d26",
+"7":"#deebf7",
+"8":"#9ecae1",
+"9":"#3182bd",
+}
+
 var center = cityCentroids["Chicago"]
 var projection = d3.geo.mercator().scale(20000).center([center.lng,center.lat])
 var densityScale = d3.scale.linear().domain([3000,31684]).range([5,50])
@@ -18,17 +41,47 @@ var projection = d3.geo.mercator().scale(60000).center([-87.7,42.3])
     var ligAveChart = dc.barChart("#light_average")
     var placesChart = dc.barChart("#places")
 function dataDidLoad(error,cities) {
-  //  var mapSvg = d3.select("#map").append("svg").attr("width",1200).attr("height",1800)
-   // filter(cities)
-   // drawDotsMap(cities)
+ 
     charts(cities)
+    drawKey()
 }
 //population,income,averlight,places,b_diversity,dev_intensity,id,lng,lat
-function charts(data){
+function drawKey(){
+    var keyArray = []
+    for(var i =1; i<=9; i++){
+        var color = colors[i]
+        var group = groupToWords[i]
+        keyArray.push([color,group])
+    }
+    
+    var keySvg = d3.select("#key").append("svg").attr("width",180).attr("height",180)
+    keySvg.selectAll(".key")
+    .data(keyArray)
+    .enter()
+    .append("rect")
+    .attr("x",0)
+    .attr("y",function(d,i){return i*14+10})
+    .attr("width",10)
+    .attr("height",10)
+    .attr("fill",function(d){return d[0]})
+    
+    keySvg.selectAll(".keyText")
+    .data(keyArray)
+    .enter()
+    .append("text")
+    .attr("x",15)
+    .attr("y",function(d,i){return i*14+20})
+    .attr("width",10)
+    .attr("height",10)
+    .text(function(d){return d[1]})
+    .style("fill","#fff").attr("font-size","11px")
+    
+     keySvg.append("text").text("Grid Size is 250m x 250m").attr("x",0).attr("y",160)    
+    .style("fill","#fff").attr("font-size","11px")
 
-    
-//    var heatmapChart = dc.heatMap("#map")
-    
+}
+
+function charts(data){
     data.forEach(function(d){
         d.lng = +d.lng
         d.lat = +d.lat
@@ -277,29 +330,7 @@ function initCanvas(data){
     });
 }
 function drawMap(data){
-    var groupToWords = {
-    "1":"Low Income, Low Intensity",
-    "2":"Low Income, Medium Intensity",
-    "3":"Low Income, High Intensity",
-    "4":"Medium Income, Low Intensity",
-    "5":"Medium Income, Medium Intensity",
-    "6":"Medium Income, High Intensity",
-    "7":"High Income, Low Intensity",
-    "8":"High Income, Medium Intensity",
-    "9":"High Income, High Intensity"
-    }
-    var colors = {
-    "1":"#fff7bc",
-    "2":"#fee391",
-    "3":"#fec44f",
-    "4":"#fee0d2",
-    "5":"#fc9272",
-    "6":"#de2d26",
-    "7":"#deebf7",
-    "8":"#9ecae1",
-    "9":"#3182bd",
-    }
-    
+   
     var mapSvg = d3.select("#map").append("svg").attr("width",1000).attr("height",1000)
     mapSvg.selectAll("circle")
         .data(data)
