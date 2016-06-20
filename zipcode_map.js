@@ -72,7 +72,7 @@ function baseMap(zipcodes){
         .offset([-5, 0])
     
     var container = map.getCanvasContainer()
-    var svg = d3.select(container).append("svg")
+    var svg = d3.select(container).append("svg").attr("class","zipcodemap")
     svg.call(tip)
     svg.selectAll("path") 
         .data(zipcodes.features)
