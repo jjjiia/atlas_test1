@@ -1,0 +1,28 @@
+{
+  "name": "atlas_of_lighting",
+  "version": "1.0.0",
+  "description": "startcode-for-web-app-serving-spatial-data",
+  "repository": "https://github.com/arminakvn/atlas_test1",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "monitor": "nodemon server.js",
+    "deploy": "gcloud preview app deploy app.yaml"
+  },
+  "author": "Armin Akhavan armin.akhavan@gmail.com",
+  "license": "Apache Version 2.0",
+  "dependencies": {
+    "async": "latest",
+    "body-parser": "^1.14.2",
+    "daemon": "latest",
+    "express": "latest",
+    "gcloud": "git://github.com/GoogleCloudPlatform/gcloud-node",
+    "googleapis": "latest",
+    "optimist": "latest",
+    "request": "latest",
+    "serve-static": "latest"
+  },
+  "engines": {
+    "node": "latest"
+  }
+}
