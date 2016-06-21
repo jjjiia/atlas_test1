@@ -1,33 +1,138 @@
-
 'use strict';
 
 $(function() {
 	queue()
 		.defer(d3.csv, "grids_values_export_no0.csv")
+        .defer(d3.json,"zipcode_business.geojson")
 	//	.defer(d3.json, "grids.geojson")
     .await(dataDidLoad);
 })
+var groupToWords = {
+"1":"Low Income, Low Intensity",
+"2":"Low Income, Medium Intensity",
+"3":"Low Income, High Intensity",
+"4":"Medium Income, Low Intensity",
+"5":"Medium Income, Medium Intensity",
+"6":"Medium Income, High Intensity",
+"7":"High Income, Low Intensity",
+"8":"High Income, Medium Intensity",
+"9":"High Income, High Intensity"
+}
+var colors = {
+"1":"#fff7bc",
+"2":"#fee391",
+"3":"#fec44f",
+"4":"#fee0d2",
+"5":"#fc9272",
+"6":"#de2d26",
+"7":"#deebf7",
+"8":"#9ecae1",
+"9":"#3182bd",
+}
+
 var center = cityCentroids["Chicago"]
 var projection = d3.geo.mercator().scale(20000).center([center.lng,center.lat])
 var densityScale = d3.scale.linear().domain([3000,31684]).range([5,50])
-var projection = d3.geo.mercator().scale(60000).center([-87.7,42.3])
-    var populationChart = dc.barChart("#population")
-    var incomeChart = dc.barChart("#income")
-    var busDivChart = dc.barChart("#business_diversity")
-    var devIntChart = dc.rowChart("#development_intensity")
-    var ligAveChart = dc.barChart("#light_average")
-    var placesChart = dc.barChart("#places")
-function dataDidLoad(error,cities) {
-  //  var mapSvg = d3.select("#map").append("svg").attr("width",1200).attr("height",1800)
-   // filter(cities)
-   // drawDotsMap(cities)
-    charts(cities)
+var projection = d3.geo.mercator().scale(30000).center([-87.7,42.3])
+var populationChart = dc.barChart("#population")
+var incomeChart = dc.barChart("#income")
+var busDivChart = dc.barChart("#business_diversity")
+var devIntChart = dc.rowChart("#development_intensity")
+var ligAveChart = dc.barChart("#light_average")
+var placesChart = dc.barChart("#places")
+
+var __map = null
+var colorByLight = true
+function dataDidLoad(error,grid,zipcodes) {
+    charts(grid)
+   // drawPolygons(zipcodes)
 }
-//population,income,averlight,places,b_diversity,dev_intensity,id,lng,lat
+
+function initCanvas(data){
+
+    if(__map == null){
+    
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtaW5hdm4iLCJhIjoiSTFteE9EOCJ9.iDzgmNaITa0-q-H_jw1lJw';
+        __map = new mapboxgl.Map({
+            container: "map", // container id
+            style: 'mapbox://styles/arminavn/cimgzcley000nb9nluxbgd3q5', //stylesheet location
+            center: [-86.4,41.6], // starting position
+            zoom: 8 // starting zoom
+        });
+        
+    }
+    var map = __map
+ //   var svg = d3.select(map.getPanes().overlayPane).append("svg")
+    
+    function project(d) {
+        return map.project(getLL(d));
+    }
+    function getLL(d) {
+          return new mapboxgl.LngLat(+d.lng, +d.lat)
+    }
+    var bbox = document.body.getBoundingClientRect();
+   
+//svg.append("circle").attr("cx",200).attr("cy",200).attr("r",20)
+
+    
+    var chart = d3.select("#map").append("canvas").attr("class","datalayer").node()
+     chart.width = 1800
+     chart.height = 1200
+     // .call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoom()))
+      //.node().getContext("2d");
+
+        var context = chart.getContext("2d");
+
+
+        context.clearRect(0, 0, chart.width, chart.height);
+        data.forEach(function(d, i) {
+            var x = project(d).x
+            var y = project(d).y
+            var fillColor = null
+            var colors = {
+            "1":"#fff7bc",
+            "2":"#fee391",
+            "3":"#fec44f",
+            "4":"#fee0d2",
+            "5":"#fc9272",
+            "6":"#de2d26",
+            "7":"#deebf7",
+            "8":"#9ecae1",
+            "9":"#3182bd",
+            }
+            if(colorByLight==true){
+                var light = d.averlight
+                var lightScale = d3.scale.linear().domain([0,200,400]).range(["#3182bd","#fee391","#fc9272"])
+                fillColor = lightScale(light)   
+            }else{
+                var IC = d.inc_cat
+                var DI = d.dev_intensity
+                if(IC == 1){
+                    if(DI == 1){fillColor = colors[1]}
+                    else if(DI == 2){fillColor = colors[2]}
+                    else{fillColor = colors[3]}
+                }else if (IC ==2){
+                    if(DI == 1){fillColor =  colors[4]}
+                    else if(DI == 2){fillColor =  colors[5]}
+                    else{fillColor = colors[6]}
+                }else if (IC ==3){
+                    if(DI == 1){fillColor =  colors[7]}
+                    else if(DI == 2){fillColor = colors[8]}
+                    else{fillColor = colors[9]}
+                }
+            }
+            
+            
+          context.beginPath();
+          context.rect(x,y, 1, 1);
+          context.fillStyle=fillColor;
+    //      context.fillStyle = "rgba(0,0,0,.3)"
+          context.fill();
+          context.closePath();
+        });
+ //   context.clearRect(0, 0, chart.width, chart.height);   
+}
 function charts(data){
-    
-//    var heatmapChart = dc.heatMap("#map")
-    
     data.forEach(function(d){
         d.lng = +d.lng
         d.lat = +d.lat
@@ -76,16 +181,7 @@ function charts(data){
         
         return [projectedLat,projectedLng,d.dev_intensity]
     })
-  //  var lngDimension = ndx.dimension(function(d){
-  //      var projectedLng = projection([d.lng,d.lat])[0]
-  //      return projectedLng
-  //  })
-  //
-  //    
-  //  var lngDimension = ndx.dimension(function(d){return [d.lng,d.lat,d.dev_intensity]})
-  //  var latDimension = ndx.dimension(function(d){return d.lat})
-  //  
- //   var latGroup = latDimension.group()
+
       var colors = ["red","blue","orange","red"]
     var lngGroup = lngDimension.group().reduce(
         function(p,v){
@@ -105,95 +201,70 @@ function charts(data){
             return{count:0,x:0,y:0,label:""};
         })
         
-        
-//    var idDimension = ndx.dimension(function(d){return d.id})
-//    var idGroup = idDimension.group()
-        
-//        console.log(grid)
-//    var map = dc.geoChoroplethChart("#map")
-//        .projection(projection)
-//        .width(1000)
-//        .height(1000)
-//        .dimension(
-//            function(d){
-//                console.log(d)
-//             return idDimension   
-//            })
-//        .group(idGroup)
-//        .overlayGeoJson(grid.features,"id",function(d){
-//            if(d.properties.id != undefined){
-//                return d.properties.id
-//            }
-//        })
-//    
-//    d3.select("#map").append("svg").attr("width",800).attr("height",800)
-//var mapdata = []
-//    dc.bubbleChart("#map")
-//        .width(800)
-//        .height(800)
-//        .dimension(lngDimension)
-//        .group(lngGroup)
-//        .keyAccessor(function(p){return p.value.lat})
-//        .valueAccessor(function(p){return p.value.lng})
-//        .radiusValueAccessor(function (d) {
-//            return 3
-//           return d.key[2]
-//       })
-//       .colors(["red","green","blue","orange"])
-//        .x(d3.scale.linear().domain([-250, 250]))
-//        .y(d3.scale.linear().domain([-100, 100]))
-//        .r(d3.scale.linear().domain([0, 40]))
-
-    busDivChart.width(chartWidth).height(100)
+        var chartHeight = 80
+    busDivChart.width(chartWidth).height(chartHeight)
         .group(busDivGroup).dimension(busDivDimension)        
         .ordinalColors(["#aaaaaa"])
+        .margins({top: 0, left: 50, right: 10, bottom: 20})
         .x(d3.scale.linear().domain([0, 3]))
     
         busDivChart.yAxis().ticks(2)
         busDivChart.xAxis().ticks(4)
     
-    placesChart.width(chartWidth).height(100)
+    placesChart.width(chartWidth).height(chartHeight)
         .group(placesGroup).dimension(placesDimension)        
         .elasticY(true)
         .ordinalColors(["#aaaaaa"])
           .gap(0)
+        .margins({top: 0, left: 50, right: 10, bottom: 20})
+        
         .x(d3.scale.linear().domain([0, 20]))
          placesChart.yAxis().ticks(2)
     
-    devIntChart.width(chartWidth).height(100)
+    devIntChart.width(chartWidth).height(chartHeight)
         .group(devIntGroup).dimension(devIntDimension)
         .ordinalColors(["#ffffff"])      
+        .margins({top: 0, left: 50, right: 10, bottom: 20})
+        
        // .x(d3.scale.linear().domain([0, 4]))
         .xAxis().ticks(4)
     
-    ligAveChart.width(chartWidth).height(100)
+    ligAveChart.width(chartWidth).height(chartHeight)
         .group(laGroup).dimension(ligAveDimension).centerBar(true)
         //.round(dc.round.floor)
         //.alwaysUseRounding(true)
         .elasticY(true)
         .ordinalColors(["#ffffff"])
+        .margins({top: 0, left: 50, right: 10, bottom: 20})
+        
         .x(d3.scale.linear().domain([0, 500]))
         .yAxis().ticks(3)
     
-    populationChart.width(chartWidth).height(100).group(pGroup).dimension(populationDimension)
+    populationChart.width(chartWidth).height(chartHeight).group(pGroup).dimension(populationDimension)
         .round(dc.round.floor)
         .alwaysUseRounding(true)
         .elasticY(true)
         .elasticX(true)
         .ordinalColors(["#ffffff"])
         .x(d3.scale.linear().domain([0, 30]))
+        .margins({top: 0, left: 50, right: 10, bottom: 20})
+        
         .yAxis().ticks(2)
+        populationChart.xAxis().ticks(4)
     
-    incomeChart.width(chartWidth).height(100).group(iGroup).dimension(incomeDimension)
+    incomeChart.width(chartWidth).height(chartHeight).group(iGroup).dimension(incomeDimension)
         .round(dc.round.floor)    
         .ordinalColors(["#ffffff"])        
         .alwaysUseRounding(true)
         .elasticY(true)
         .elasticX(true)
+        .margins({top: 0, left: 50, right: 10, bottom: 20})
+        
         .on('renderlet', function(d) {
                 var newData = incomeDimension.top(Infinity)
                 //reDrawMap(newData)
-            d3.select("#map canvas").remove()
+            d3.select("#map .datalayer").remove()
+            
             initCanvas(newData)
         })
         .x(d3.scale.linear().domain([1,250000]))
@@ -214,7 +285,6 @@ function charts(data){
             all:"Total %total-count areas."
         })
         initCanvas(data)
-       // drawMap(incomeDimension.top(Infinity))
         dc.renderAll();
 }
 function reDrawMap(data){
@@ -223,82 +293,8 @@ function reDrawMap(data){
     d3.selectAll("#map circle").data(data).transition().duration(1000).attr("opacity",1)
 
 }
-
-function initCanvas(data){
-    var base = d3.select("#map");
-    var chart = base.append("canvas")
-      .attr("width", 1000)
-      .attr("height", 1000)
-     // .call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoom()))
-      //.node().getContext("2d");
-      
-    var context = chart.node().getContext("2d");
-    context.clearRect(0, 0, chart.width, chart.height);
-    var colors = {
-    "1":"#fff7bc",
-    "2":"#fee391",
-    "3":"#fec44f",
-    "4":"#fee0d2",
-    "5":"#fc9272",
-    "6":"#de2d26",
-    "7":"#deebf7",
-    "8":"#9ecae1",
-    "9":"#3182bd",
-    }
-      
-    data.forEach(function(d, i) {
-        
-        var x = (projection([d.lng,d.lat])[0])
-        var y = (projection([d.lng,d.lat])[1])
-        var IC = d.inc_cat
-        var DI = d.dev_intensity
-        var fillColor = null
-        
-        if(IC == 1){
-            if(DI == 1){fillColor = colors[1]}
-            else if(DI == 2){fillColor = colors[2]}
-            else{fillColor = colors[3]}
-        }else if (IC ==2){
-            if(DI == 1){fillColor = colors[4]}
-            else if(DI == 2){fillColor = colors[5]}
-            else{fillColor = colors[6]}
-        }else if (IC ==3){
-            if(DI == 1){fillColor = colors[7]}
-            else if(DI == 2){fillColor = colors[8]}
-            else{fillColor = colors[9]}
-        }
-        
-      context.beginPath();
-      context.rect(x,y, 2, 2);
-      context.fillStyle=fillColor;
-      context.fill();
-      context.closePath();
-    });
-}
 function drawMap(data){
-    var groupToWords = {
-    "1":"Low Income, Low Intensity",
-    "2":"Low Income, Medium Intensity",
-    "3":"Low Income, High Intensity",
-    "4":"Medium Income, Low Intensity",
-    "5":"Medium Income, Medium Intensity",
-    "6":"Medium Income, High Intensity",
-    "7":"High Income, Low Intensity",
-    "8":"High Income, Medium Intensity",
-    "9":"High Income, High Intensity"
-    }
-    var colors = {
-    "1":"#fff7bc",
-    "2":"#fee391",
-    "3":"#fec44f",
-    "4":"#fee0d2",
-    "5":"#fc9272",
-    "6":"#de2d26",
-    "7":"#deebf7",
-    "8":"#9ecae1",
-    "9":"#3182bd",
-    }
-    
+   
     var mapSvg = d3.select("#map").append("svg").attr("width",1000).attr("height",1000)
     mapSvg.selectAll("circle")
         .data(data)
@@ -315,6 +311,7 @@ function drawMap(data){
         .attr("fill",function(d){
             var IC = d.inc_cat
             var DI = d.dev_intensity
+            
             if(IC == 1){
                 if(DI == 1){return colors[1]}
                 else if(DI == 2){return colors[2]}
@@ -328,19 +325,61 @@ function drawMap(data){
                 else if(DI == 2){return colors[8]}
                 else{return colors[9]}
             }
+            
         })
     .attr("opacity",.5)
-    .on("mouseover",function(d){console.log(d)})
+        .on("mouseover",function(d){console.log(d)})
 }
-function drawPolygons(geoData,svg){
-    var svg = d3.select("#map svg")
+function drawPolygons(geoData){
+    
+    var container = __map.getCanvasContainer()
+    var svg = d3.select(container).append("svg")
+   // var svg = d3.select("#map svg")
 	var path = d3.geo.path().projection(projection);
-svg.insert("path", ".graticule")
-      .datum(topojson.feature(geoData, geoData.objects.land))
-      .attr("class", "country")
-      .attr("d", path)
-		.style("fill","#000")
+
+    svg.selectAll("path") 
+        .data(geoData.features)
+        .enter()
+        .append("path")
+        .attr("class", "country")
+        .attr("d", path)
+        .style("fill","#000")
         .style("stroke","#ffffff")
         .style("stroke-width",1)
-	    .style("opacity",1)
+        .style("opacity",1)
+}
+//population,income,averlight,places,b_diversity,dev_intensity,id,lng,lat
+function drawKey(){
+    var keyArray = []
+    for(var i =1; i<=9; i++){
+        var color = colors[i]
+        var group = groupToWords[i]
+        keyArray.push([color,group])
+    }
+    
+    var keySvg = d3.select("#key").append("svg").attr("width",180).attr("height",180)
+    keySvg.selectAll(".key")
+    .data(keyArray)
+    .enter()
+    .append("rect")
+    .attr("x",0)
+    .attr("y",function(d,i){return i*14+10})
+    .attr("width",10)
+    .attr("height",10)
+    .attr("fill",function(d){return d[0]})
+    
+    keySvg.selectAll(".keyText")
+    .data(keyArray)
+    .enter()
+    .append("text")
+    .attr("x",15)
+    .attr("y",function(d,i){return i*14+20})
+    .attr("width",10)
+    .attr("height",10)
+    .text(function(d){return d[1]})
+    .style("fill","#fff").attr("font-size","11px")
+    
+     keySvg.append("text").text("Grid Size is 250m x 250m").attr("x",0).attr("y",160)    
+    .style("fill","#fff").attr("font-size","11px")
+
 }
