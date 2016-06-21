@@ -1,7 +1,7 @@
 'use strict';
 
 $(function() {
-	queue()
+	d3.queue()
 		.defer(d3.csv, "grids_values_export_no0.csv")
         .defer(d3.json,"zipcode_business.geojson")
 	//	.defer(d3.json, "grids.geojson")

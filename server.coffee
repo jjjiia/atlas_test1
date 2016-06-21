@@ -1,13 +1,14 @@
 `var path`
 'use strict'
 
-express = require('express')
+express = require 'express'
 request = require 'request'
-path = require('path')
-http = require('http')
-path = require('path')
-async = require('async')
-serveStatic = require('serve-static')
+redis = require 'redis'
+path = require 'path' 
+http = require 'http'
+path = require 'path'
+async = require 'async'
+serveStatic = require 'serve-static'
 app = express()
 app.disable 'etag'
 app.set 'trust proxy', true
@@ -15,9 +16,22 @@ app.use serveStatic('./', 'index': [
   'grid.html'
   'grid.htm'
 ])
-app.use serveStatic('./js')
-app.use serveStatic('./node_modules/web-audio-api/lib')
-
+app.use serveStatic('./node_modules/bootstrap/dist/js')
+app.use serveStatic('./node_modules/bootstrap/dist/css')
+app.use serveStatic('./node_modules/jquery/dist')
+app.use serveStatic('./node_modules/jquery/dist')
+app.use serveStatic('./node_modules/d3')
+app.use serveStatic('./node_modules/d3-queue/')
+app.use serveStatic('./node_modules/topojson/build')
+app.use serveStatic('./node_modules/mapbox.js/')
+app.use serveStatic('./node_modules/d3-tip')
+app.use serveStatic('./node_modules/mapbox-gl/dist')
+app.use serveStatic('./node_modules/leaflet/dist')
+app.use serveStatic('./node_modules/crossfilter')
+app.use serveStatic('./stylesheets')
+app.use serveStatic('./data')
+app.use serveStatic('./node_modules/dc')
+app.use serveStatic('./scripts')
 
 app.get '/', (req, res) ->
   # res.status(200).send("Hello, world!");

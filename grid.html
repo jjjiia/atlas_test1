@@ -2,26 +2,28 @@
 <html>
   <head>
   <meta charset="UTF-8">
-	<title>NAME</title>
+	<title>Atlas of lighting - grid map</title>
 	<script src="jquery.min.js"></script>  
-	<script src="queue.v1.min.js"></script>  
-	<script src="d3.v3.min.js"></script>  
-	<script src="d3.tip.v0.6.3.js"></script> 
-	<script src="bootstrap/js/bootstrap.js"></script>  
+	<!-- <script src="d3.tip.js"></script> -->
+	<script src="bootstrap.js"></script>  
+  <!-- <link href='mapbox-gl.css' rel='stylesheet' />
+  <script src='mapbox-gl.js'></script> -->
   <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.0/mapbox-gl.css' rel='stylesheet' />
   <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.0/mapbox-gl.js'></script>
-  <link rel="stylesheet" href="js/leaflet.css" />
-  <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-  <script src="//d3js.org/topojson.v1.min.js"></script>
+  <link rel="stylesheet" href="leaflet.css" />
+  <script src="leaflet.js"></script>  
+  <script src="d3.min.js"></script>
+  <script src="d3-queue.js"></script>
+  <script src="topojson.min.js"></script>
   <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-  <script src="crossfilter.v1.min.js"></script>
+  <script src="crossfilter.min.js"></script>
   <script src="dc.js"></script>
   
-  <script src='//api.tiles.mapbox.com/mapbox.js/v1.2.0/mapbox.js'></script>
-  <link href='//api.tiles.mapbox.com/mapbox.js/v1.2.0/mapbox.css' rel='stylesheet' />
+  <script src='mapbox.js'></script>
+  <link href='mapbox.css' rel='stylesheet' />
 <link href='https://fonts.googleapis.com/css?family=Dosis:500,300|Ropa+Sans' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">  
-	<link rel="stylesheet" type="text/css" href="stylesheets/atlas.css"> </style>     
+<link rel="stylesheet" href="bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">  
+	<link rel="stylesheet" type="text/css" href="atlas.css"> </style>     
 </head>
 
 <body>
@@ -30,10 +32,12 @@
     <div id = "moreinfo" class="col-md-1">
     <img src="icons/questionMark.png" style="width:25px ">
     </div>
-    <div id = "title" class="col-md-9">ATLAS of LIGHTING</div>
+    <div id = "title" class="col-md-9">ATLAS of LIGHTING <sup><small><i>beta</i></small></sup></div>
     <div id = "philips" class="col-md-1"><img src="logos/philips_white.png" style="width:80px "></div>
     <div id = "civic" class="col-md-1"><img src="logos/cddl_white.png" style="width:80px "></div>
   </div>
+
+
   
     <div id = "map"></div>
     <div id = "info" class="col-md-4">
@@ -90,7 +94,15 @@
 
 
 </script>
-	
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-79653789-1', 'auto');
+ga('send', 'pageview');
+
+</script>
 </body>
->>>>>>> origin/gh-pages
 </html>

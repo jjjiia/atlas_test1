@@ -2,11 +2,13 @@
 (function() {
   var path;
   'use strict';
-  var app, async, express, http, path, request, serveStatic, server;
+  var app, async, express, http, path, redis, request, serveStatic, server;
 
   express = require('express');
 
   request = require('request');
+
+  redis = require('redis');
 
   path = require('path');
 
@@ -28,9 +30,37 @@
     'index': ['grid.html', 'grid.htm']
   }));
 
-  app.use(serveStatic('./js'));
+  app.use(serveStatic('./node_modules/bootstrap/dist/js'));
 
-  app.use(serveStatic('./node_modules/web-audio-api/lib'));
+  app.use(serveStatic('./node_modules/bootstrap/dist/css'));
+
+  app.use(serveStatic('./node_modules/jquery/dist'));
+
+  app.use(serveStatic('./bower_components/jquery/dist'));
+
+  app.use(serveStatic('./bower_components/d3'));
+
+  app.use(serveStatic('./bower_components/d3-queue/'));
+
+  app.use(serveStatic('./node_modules/topojson/build'));
+
+  app.use(serveStatic('./bower_components/mapbox.js/'));
+
+  app.use(serveStatic('./bower_components/d3-tip'));
+
+  app.use(serveStatic('./node_modules/mapbox-gl/dist'));
+
+  app.use(serveStatic('./bower_components/leaflet/dist'));
+
+  app.use(serveStatic('./bower_components/crossfilter'));
+
+  app.use(serveStatic('./stylesheets'));
+
+  app.use(serveStatic('./data'));
+
+  app.use(serveStatic('./node_modules/dc'));
+
+  app.use(serveStatic('./scripts'));
 
   app.get('/', function(req, res) {
     res.render('index', function(err, html) {
